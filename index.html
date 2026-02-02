@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>エフェクチュエーション自己診断ツール</title>
+    <style>
+        :root {
+            --primary-color: #2c7a7b;
+            --primary-light: #4fd1c5;
+            --primary-dark: #234e52;
+            --secondary-color: #3182ce;
+            --secondary-light: #63b3ed;
+            --background: #f7fafc;
+            --card-bg: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --benchmark-color: #e53e3e;
+            --expert-color: #805ad5;
+            --beginner-color: #ed8936;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 40px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 24px;
+                border-radius: 12px;
+            }
+            .container {
+                padding: 12px;
+            }
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+        }
+
+        h3 {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Introduction Screen */
+        .intro-icon {
+            text-align: center;
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .purpose-box {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .purpose-box h2 {
+            color: white;
+        }
+
+        .disclaimer-box {
+            background: #ebf8ff;
+            border-left: 4px solid var(--secondary-color);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 24px;
+        }
+
+        .disclaimer-box h3 {
+            color: var(--secondary-color);
+            margin-bottom: 12px;
+        }
+
+        .disclaimer-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .disclaimer-box li {
+            padding: 8px 0;
+            padding-left: 28px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .disclaimer-box li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .research-info-box {
+            background: #f0fff4;
+            border-left: 4px solid var(--success);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 24px;
+        }
+
+        .research-info-box h3 {
+            color: var(--success);
+            margin-bottom: 12px;
+        }
+
+        .research-info-box p {
+            font-size: 0.9rem;
+        }
+
+        .citation-box {
+            background: #f7fafc;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+        }
+
+        .citation-box h4 {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .citation-box p {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .citation-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 32px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Question Screen */
+        .question-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--primary-light);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        /* Rating Scale */
+        .rating-scale {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .rating-option {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rating-option:hover {
+            border-color: var(--primary-light);
+            background: #f0fff4;
+        }
+
+        .rating-option.selected {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #e6fffa 0%, #ebf8ff 100%);
+        }
+
+        .rating-option input {
+            display: none;
+        }
+
+        .rating-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--border-color);
+            border-radius: 50%;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-right: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .rating-option.selected .rating-number {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .rating-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .nav-buttons .btn {
+            flex: 1;
+            max-width: 200px;
+        }
+
+        /* Results Screen */
+        .results-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .results-header .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        /* Experience Level Selector */
+        .experience-selector {
+            background: linear-gradient(135deg, #faf5ff 0%, #f0fff4 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid #e9d8fd;
+        }
+
+        .experience-selector h3 {
+            color: var(--expert-color);
+            margin-bottom: 16px;
+        }
+
+        .experience-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .experience-option {
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            background: white;
+        }
+
+        .experience-option:hover {
+            border-color: var(--expert-color);
+        }
+
+        .experience-option.selected {
+            border-color: var(--expert-color);
+            background: linear-gradient(135deg, #faf5ff 0%, #f0fff4 100%);
+        }
+
+        .experience-option .level-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .experience-option .level-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .score-card h3 {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .score-max {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .score-card.experimentation {
+            border-top: 4px solid #4fd1c5;
+        }
+
+        .score-card.affordable-loss {
+            border-top: 4px solid #63b3ed;
+        }
+
+        .score-card.flexibility {
+            border-top: 4px solid #68d391;
+        }
+
+        .score-card.total {
+            border-top: 4px solid var(--expert-color);
+        }
+
+        .benchmark-comparison {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 12px;
+            font-size: 0.8rem;
+        }
+
+        .benchmark-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .benchmark-label {
+            color: var(--text-muted);
+        }
+
+        .benchmark-value {
+            font-weight: 600;
+        }
+
+        .benchmark-value.research {
+            color: var(--benchmark-color);
+        }
+
+        .benchmark-value.expert {
+            color: var(--expert-color);
+        }
+
+        .benchmark-value.beginner {
+            color: var(--beginner-color);
+        }
+
+        .diff-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .diff-positive {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .diff-negative {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .diff-neutral {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-box {
+            background: #f7fafc;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .chart-box h3 {
+            margin-bottom: 16px;
+        }
+
+        .radar-chart {
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+            align-items: center;
+        }
+
+        .legend-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .legend-dot.yours, .legend-line.yours {
+            background: var(--primary-light);
+        }
+
+        .legend-dot.research, .legend-line.research {
+            background: var(--benchmark-color);
+        }
+
+        .legend-dot.expert, .legend-line.expert {
+            background: var(--expert-color);
+        }
+
+        .legend-dot.beginner, .legend-line.beginner {
+            background: var(--beginner-color);
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 16px 0;
+        }
+
+        .bar-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bar-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .bar-values {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .bar-track {
+            height: 28px;
+            background: var(--border-color);
+            border-radius: 14px;
+            overflow: visible;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 14px;
+            transition: width 0.8s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .bar-fill.yours {
+            z-index: 2;
+        }
+
+        .bar-fill.experimentation {
+            background: linear-gradient(90deg, #81e6d9 0%, #4fd1c5 100%);
+        }
+
+        .bar-fill.affordable-loss {
+            background: linear-gradient(90deg, #90cdf4 0%, #63b3ed 100%);
+        }
+
+        .bar-fill.flexibility {
+            background: linear-gradient(90deg, #9ae6b4 0%, #68d391 100%);
+        }
+
+        .bar-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .bar-marker {
+            position: absolute;
+            top: -6px;
+            bottom: -6px;
+            width: 4px;
+            border-radius: 2px;
+            z-index: 3;
+            transition: left 0.8s ease;
+        }
+
+        .bar-marker.research {
+            background: var(--benchmark-color);
+        }
+
+        .bar-marker.expert {
+            background: var(--expert-color);
+        }
+
+        .bar-marker.beginner {
+            background: var(--beginner-color);
+        }
+
+        .bar-marker-label {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        .bar-marker.research .bar-marker-label {
+            color: var(--benchmark-color);
+        }
+
+        .bar-marker.expert .bar-marker-label {
+            color: var(--expert-color);
+        }
+
+        .bar-marker.beginner .bar-marker-label {
+            color: var(--beginner-color);
+        }
+
+        /* Experience Level Comparison */
+        .level-comparison {
+            background: linear-gradient(135deg, #faf5ff 0%, #ebf8ff 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid #e9d8fd;
+        }
+
+        .level-comparison h3 {
+            color: var(--expert-color);
+            margin-bottom: 16px;
+        }
+
+        .level-scale {
+            position: relative;
+            height: 60px;
+            background: linear-gradient(90deg, #fed7d7 0%, #fefcbf 50%, #c6f6d5 100%);
+            border-radius: 30px;
+            margin: 20px 0;
+        }
+
+        .level-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .level-marker {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .level-marker-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .level-marker-label {
+            position: absolute;
+            top: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .your-position {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .your-position-dot {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .your-position-label {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .level-descriptions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 40px;
+        }
+
+        .level-desc-card {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .level-desc-card h4 {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .level-desc-card p {
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+
+        .level-desc-card .range {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .level-desc-card.beginner {
+            border-left: 3px solid var(--beginner-color);
+        }
+
+        .level-desc-card.intermediate {
+            border-left: 3px solid var(--warning);
+        }
+
+        .level-desc-card.expert {
+            border-left: 3px solid var(--expert-color);
+        }
+
+        /* Research Context */
+        .research-context {
+            background: linear-gradient(135deg, #fff5f5 0%, #ebf8ff 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid #feb2b2;
+        }
+
+        .research-context h3 {
+            color: var(--benchmark-color);
+            margin-bottom: 16px;
+        }
+
+        .research-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .research-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        /* Usage Rate Comparison */
+        .usage-comparison {
+            background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%);
+            border: 1px solid #f6ad55;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .usage-comparison h3 {
+            color: #c05621;
+            margin-bottom: 16px;
+        }
+
+        .usage-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .usage-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .usage-bar-label {
+            width: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .usage-bar-track {
+            flex: 1;
+            height: 24px;
+            background: #feebc8;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .usage-bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .usage-bar-fill.expert {
+            background: linear-gradient(90deg, #b794f4 0%, #805ad5 100%);
+        }
+
+        .usage-bar-fill.beginner {
+            background: linear-gradient(90deg, #fbd38d 0%, #ed8936 100%);
+        }
+
+        .usage-note {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Interpretations */
+        .interpretation-section {
+            margin-bottom: 32px;
+        }
+
+        .interpretation-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .interpretation-card.experimentation {
+            border-left-color: #4fd1c5;
+        }
+
+        .interpretation-card.affordable-loss {
+            border-left-color: #63b3ed;
+        }
+
+        .interpretation-card.flexibility {
+            border-left-color: #68d391;
+        }
+
+        .interpretation-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .level-high {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .level-medium {
+            background: #fefcbf;
+            color: #975a16;
+        }
+
+        .level-low {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .comparison-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        /* Key Insight Box */
+        .key-insight {
+            background: linear-gradient(135deg, #e6fffa 0%, #ebf8ff 100%);
+            border: 1px solid var(--primary-light);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .key-insight h3 {
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+        }
+
+        .key-insight p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .key-insight p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Reflection Questions */
+        .reflection-section {
+            background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .reflection-section h3 {
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+        }
+
+        .reflection-questions {
+            list-style: none;
+        }
+
+        .reflection-questions li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .reflection-questions li:last-child {
+            border-bottom: none;
+        }
+
+        .reflection-questions li::before {
+            content: "💭";
+            position: absolute;
+            left: 0;
+        }
+
+        /* Important Notice */
+        .important-notice {
+            background: #fffaf0;
+            border: 1px solid #fbd38d;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .important-notice h3 {
+            color: #c05621;
+            margin-bottom: 16px;
+        }
+
+        .important-notice ul {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+
+        .important-notice li {
+            padding: 6px 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .important-notice li::before {
+            content: "• ";
+            color: #c05621;
+        }
+
+        .notice-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #fbd38d;
+        }
+
+        .notice-section h4 {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .notice-section p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        /* Dimension Explanations */
+        .dimension-explanations {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .dimension-card {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .dimension-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .dimension-content h4 {
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .dimension-content p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        .dimension-range {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+
+        .dimension-range span {
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .dimension-range .expert-range {
+            background: #e9d8fd;
+            color: var(--expert-color);
+        }
+
+        .dimension-range .beginner-range {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen.active {
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .rating-option:focus-within {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .btn:focus {
+            outline: 3px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        /* Print Styles */
+        @media print {
+            .btn, .nav-buttons {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .level-descriptions {
+                grid-template-columns: 1fr;
+            }
+            .experience-options {
+                grid-template-columns: 1fr;
+            }
+            .usage-bar-label {
+                width: 80px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Introduction Screen -->
+        <div id="intro-screen" class="screen active">
+            <div class="card">
+                <div class="intro-icon">🧭</div>
+                <h1>エフェクチュエーション<br>自己診断ツール</h1>
+
+                <div class="purpose-box">
+                    <h2>このツールについて</h2>
+                    <p>エフェクチュエーションとは、経験豊富な起業家に見られる独特の意思決定スタイルです。「手持ちの資源から始める」「許容できる損失の範囲で行動する」「予期せぬ出来事を活用する」といった特徴があります。</p>
+                    <p style="margin-bottom: 0;">このツールでは、<strong>実際の起業家196名のデータ</strong>や<strong>経験レベル別のスコア</strong>と比較しながら、あなた自身の傾向を振り返ることができます。</p>
+                </div>
+
+                <div class="research-info-box">
+                    <h3>📊 3種類の比較データ</h3>
+                    <p><strong>① 研究データ（Chandler et al., 2011）</strong><br>設立5年以内の企業の創業者196名の平均スコア</p>
+                    <p><strong>② 経験レベル別データ</strong><br>初心者（0-1回）、中級者（2-3回）、熟練者（4回以上）の起業経験別スコア</p>
+                    <p style="margin-bottom: 0;"><strong>③ 使用頻度データ（Dew et al., 2009）</strong><br>熟練起業家は初心者の2-3倍エフェクチュエーション的思考を使用</p>
+                </div>
+
+                <div class="disclaimer-box">
+                    <h3>大切なお知らせ</h3>
+                    <ul>
+                        <li>このツールは「鏡」として自己理解を支援するものです</li>
+                        <li>スコアに良し悪しはありません</li>
+                        <li>診断や判定ではなく、振り返りのためのツールです</li>
+                        <li>状況によって適切なスタイルは異なります</li>
+                    </ul>
+                </div>
+
+                <div class="citation-box">
+                    <h4>出典</h4>
+                    <p>Chandler, G. N., DeTienne, D. R., McKelvie, A., & Mumford, T. V. (2011). Causation and effectuation processes: A validation study. Journal of Business Venturing, 26(3), 375-390.</p>
+                    <p>Dew, N., Read, S., Sarasvathy, S. D., & Wiltbank, R. (2009). Effectual versus predictive logics in entrepreneurial decision-making. Journal of Business Venturing, 24(4), 287-309.</p>
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="btn btn-primary btn-full" onclick="startAssessment()">
+                        診断を始める
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="screen">
+            <div class="card">
+                <div class="progress-container">
+                    <div class="progress-text">
+                        <span id="progress-label">質問 1 / 11</span>
+                        <span id="category-label">実験</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 9.09%"></div>
+                    </div>
+                </div>
+
+                <div id="question-category" class="question-category">実験</div>
+                <p id="question-text" class="question-text"></p>
+
+                <div class="rating-scale" id="rating-scale" role="radiogroup" aria-label="回答選択">
+                    <label class="rating-option" tabindex="0">
+                        <input type="radio" name="rating" value="1">
+                        <span class="rating-number">1</span>
+                        <span class="rating-label">全く当てはまらない</span>
+                    </label>
+                    <label class="rating-option" tabindex="0">
+                        <input type="radio" name="rating" value="2">
+                        <span class="rating-number">2</span>
+                        <span class="rating-label">あまり当てはまらない</span>
+                    </label>
+                    <label class="rating-option" tabindex="0">
+                        <input type="radio" name="rating" value="3">
+                        <span class="rating-number">3</span>
+                        <span class="rating-label">どちらとも言えない</span>
+                    </label>
+                    <label class="rating-option" tabindex="0">
+                        <input type="radio" name="rating" value="4">
+                        <span class="rating-number">4</span>
+                        <span class="rating-label">やや当てはまる</span>
+                    </label>
+                    <label class="rating-option" tabindex="0">
+                        <input type="radio" name="rating" value="5">
+                        <span class="rating-number">5</span>
+                        <span class="rating-label">非常に当てはまる</span>
+                    </label>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="prevQuestion()">
+                        ← 戻る
+                    </button>
+                    <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" disabled>
+                        次へ →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="card">
+                <div class="results-header">
+                    <div class="icon">📊</div>
+                    <h1>診断結果</h1>
+                    <p>あなたのエフェクチュエーション傾向</p>
+                </div>
+
+                <!-- Total Score with Level Comparison -->
+                <div class="level-comparison">
+                    <h3>📈 あなたの総合スコアと経験レベル別の比較</h3>
+                    <div class="level-scale">
+                        <div class="level-markers">
+                            <div class="level-marker" style="left: 20%;">
+                                <div class="level-marker-dot" style="background: var(--beginner-color);"></div>
+                                <div class="level-marker-label" style="color: var(--beginner-color);">初心者平均</div>
+                            </div>
+                            <div class="level-marker" style="left: 50%;">
+                                <div class="level-marker-dot" style="background: var(--warning);"></div>
+                                <div class="level-marker-label" style="color: var(--warning);">中級者平均</div>
+                            </div>
+                            <div class="level-marker" style="left: 80%;">
+                                <div class="level-marker-dot" style="background: var(--expert-color);"></div>
+                                <div class="level-marker-label" style="color: var(--expert-color);">熟練者平均</div>
+                            </div>
+                        </div>
+                        <div class="your-position" id="your-position" style="left: 50%;">
+                            <div class="your-position-dot"></div>
+                            <div class="your-position-label" id="your-position-label">あなた: 0.00</div>
+                        </div>
+                    </div>
+                    <div class="level-descriptions">
+                        <div class="level-desc-card beginner">
+                            <h4 style="color: var(--beginner-color);">初心者起業家</h4>
+                            <p>起業経験 0-1回</p>
+                            <div class="range" style="color: var(--beginner-color);">2.8 - 3.2</div>
+                        </div>
+                        <div class="level-desc-card intermediate">
+                            <h4 style="color: var(--warning);">中級起業家</h4>
+                            <p>起業経験 2-3回</p>
+                            <div class="range" style="color: var(--warning);">3.4 - 3.8</div>
+                        </div>
+                        <div class="level-desc-card expert">
+                            <h4 style="color: var(--expert-color);">熟練起業家</h4>
+                            <p>起業経験 4回以上</p>
+                            <div class="range" style="color: var(--expert-color);">4.0 - 4.5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Research Context -->
+                <div class="research-context">
+                    <h3>📚 研究データ：Chandler et al. (2011)</h3>
+                    <div class="research-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">調査対象</div>
+                            <div class="stat-value">196名</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">対象企業</div>
+                            <div class="stat-value">設立5年以内</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">評価尺度</div>
+                            <div class="stat-value">5段階</div>
+                        </div>
+                    </div>
+                    <div class="research-note">
+                        <strong>重要な発見：</strong>エフェクチュエーションは「形成的概念」であり、各要素は独立しています。起業家が全ての要素を高く持つわけではなく、状況に応じて組み合わせて使用しています。
+                    </div>
+                </div>
+
+                <div class="scores-grid">
+                    <div class="score-card experimentation">
+                        <h3>実験</h3>
+                        <div class="score-value" id="score-exp">0.00</div>
+                        <div class="score-max">/ 5.00</div>
+                        <div class="benchmark-comparison">
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">研究:</span>
+                                <span class="benchmark-value research">2.55</span>
+                            </div>
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">熟練:</span>
+                                <span class="benchmark-value expert">4.2-4.5</span>
+                            </div>
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">初心者:</span>
+                                <span class="benchmark-value beginner">2.5-3.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="score-card affordable-loss">
+                        <h3>許容可能な損失</h3>
+                        <div class="score-value" id="score-aff">0.00</div>
+                        <div class="score-max">/ 5.00</div>
+                        <div class="benchmark-comparison">
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">研究:</span>
+                                <span class="benchmark-value research">3.48</span>
+                            </div>
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">熟練:</span>
+                                <span class="benchmark-value expert">3.8-4.2</span>
+                            </div>
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">初心者:</span>
+                                <span class="benchmark-value beginner">3.0-3.5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="score-card flexibility">
+                        <h3>柔軟性</h3>
+                        <div class="score-value" id="score-flex">0.00</div>
+                        <div class="score-max">/ 5.00</div>
+                        <div class="benchmark-comparison">
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">研究:</span>
+                                <span class="benchmark-value research">3.98</span>
+                            </div>
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">熟練:</span>
+                                <span class="benchmark-value expert">4.0-4.3</span>
+                            </div>
+                            <div class="benchmark-row">
+                                <span class="benchmark-label">初心者:</span>
+                                <span class="benchmark-value beginner">3.2-3.8</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-container">
+                    <div class="chart-box">
+                        <h3>レーダーチャート比較</h3>
+                        <div class="radar-chart">
+                            <svg id="radar-chart" viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg">
+                                <g id="radar-grid"></g>
+                                <polygon id="radar-beginner" fill="rgba(237, 137, 54, 0.1)" stroke="#ed8936" stroke-width="1.5" stroke-dasharray="3,3"/>
+                                <polygon id="radar-expert" fill="rgba(128, 90, 213, 0.1)" stroke="#805ad5" stroke-width="1.5" stroke-dasharray="5,5"/>
+                                <polygon id="radar-benchmark" fill="rgba(229, 62, 62, 0.1)" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="8,4"/>
+                                <polygon id="radar-data" fill="rgba(79, 209, 197, 0.3)" stroke="#4fd1c5" stroke-width="2.5"/>
+                                <g id="radar-points"></g>
+                                <g id="radar-labels"></g>
+                            </svg>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-row">
+                                <div class="legend-item">
+                                    <div class="legend-line yours"></div>
+                                    <span>あなた</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-line research" style="border: 1px dashed var(--benchmark-color); background: transparent;"></div>
+                                    <span>研究平均</span>
+                                </div>
+                            </div>
+                            <div class="legend-row">
+                                <div class="legend-item">
+                                    <div class="legend-line expert" style="border: 1px dashed var(--expert-color); background: transparent;"></div>
+                                    <span>熟練者</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-line beginner" style="border: 1px dashed var(--beginner-color); background: transparent;"></div>
+                                    <span>初心者</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-box">
+                        <h3>次元別スコア比較</h3>
+                        <div class="bar-chart">
+                            <div class="bar-item">
+                                <div class="bar-header">
+                                    <span class="bar-label">実験</span>
+                                    <span class="bar-values" id="bar-exp-value">0.00</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill experimentation yours" id="bar-exp" style="width: 0%"></div>
+                                    <div class="bar-markers">
+                                        <div class="bar-marker beginner" id="marker-exp-beginner" style="left: 55%;">
+                                            <span class="bar-marker-label">初</span>
+                                        </div>
+                                        <div class="bar-marker research" id="marker-exp-research" style="left: 51%;">
+                                            <span class="bar-marker-label">研</span>
+                                        </div>
+                                        <div class="bar-marker expert" id="marker-exp-expert" style="left: 87%;">
+                                            <span class="bar-marker-label">熟</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-header">
+                                    <span class="bar-label">許容損失</span>
+                                    <span class="bar-values" id="bar-aff-value">0.00</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill affordable-loss yours" id="bar-aff" style="width: 0%"></div>
+                                    <div class="bar-markers">
+                                        <div class="bar-marker beginner" id="marker-aff-beginner" style="left: 65%;">
+                                            <span class="bar-marker-label">初</span>
+                                        </div>
+                                        <div class="bar-marker research" id="marker-aff-research" style="left: 69.6%;">
+                                            <span class="bar-marker-label">研</span>
+                                        </div>
+                                        <div class="bar-marker expert" id="marker-aff-expert" style="left: 80%;">
+                                            <span class="bar-marker-label">熟</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-header">
+                                    <span class="bar-label">柔軟性</span>
+                                    <span class="bar-values" id="bar-flex-value">0.00</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill flexibility yours" id="bar-flex" style="width: 0%"></div>
+                                    <div class="bar-markers">
+                                        <div class="bar-marker beginner" id="marker-flex-beginner" style="left: 70%;">
+                                            <span class="bar-marker-label">初</span>
+                                        </div>
+                                        <div class="bar-marker research" id="marker-flex-research" style="left: 79.6%;">
+                                            <span class="bar-marker-label">研</span>
+                                        </div>
+                                        <div class="bar-marker expert" id="marker-flex-expert" style="left: 83%;">
+                                            <span class="bar-marker-label">熟</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; text-align: left;">
+                            初＝初心者平均 / 研＝研究平均 / 熟＝熟練者平均
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Rate Comparison -->
+                <div class="usage-comparison">
+                    <h3>💡 意思決定におけるエフェクチュエーションの使用率（Dew et al., 2009）</h3>
+                    <div class="usage-bars">
+                        <div class="usage-bar-item">
+                            <span class="usage-bar-label">熟練起業家</span>
+                            <div class="usage-bar-track">
+                                <div class="usage-bar-fill expert" style="width: 69%;">63-75%</div>
+                            </div>
+                        </div>
+                        <div class="usage-bar-item">
+                            <span class="usage-bar-label">初心者</span>
+                            <div class="usage-bar-track">
+                                <div class="usage-bar-fill beginner" style="width: 30%;">25-35%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="usage-note">熟練起業家は初心者の<strong>約2〜3倍</strong>、エフェクチュエーション的な思考を使用しています。<br>これは経験を通じて身につく意思決定スタイルであることを示唆しています。</p>
+                </div>
+
+                <!-- Key Insight -->
+                <div class="key-insight">
+                    <h3>🔍 経験レベル別の特徴</h3>
+                    <p><strong>「実験」の差が最も大きい：</strong>熟練者と初心者の差は約1.5ポイント。経験豊富な起業家ほど、様々なアプローチを試す傾向が強くなります。</p>
+                    <p><strong>「許容損失」と「柔軟性」の差は約0.8ポイント：</strong>これらの要素も経験とともに高まりますが、実験ほど顕著な差ではありません。</p>
+                    <p><strong>「形成的概念」としての理解：</strong>エフェクチュエーションの各要素は独立しており、全てを高く持つ必要はありません。あなたの状況や事業の特性に応じて、適切なバランスは異なります。</p>
+                </div>
+
+                <div class="interpretation-section">
+                    <h2>あなたの結果の解釈</h2>
+                    <div id="interpretations"></div>
+                </div>
+
+                <div class="dimension-explanations">
+                    <h2>各次元の説明と経験レベル別スコア</h2>
+                    <div class="dimension-card">
+                        <div class="dimension-icon">🧪</div>
+                        <div class="dimension-content">
+                            <h4>実験（Experimentation）</h4>
+                            <p>様々なアプローチを試し、失敗から学ぶ姿勢。完璧な計画よりも、小さく試して改善することを重視します。</p>
+                            <div class="dimension-range">
+                                <span class="expert-range">熟練: 4.2-4.5</span>
+                                <span class="beginner-range">初心者: 2.5-3.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dimension-card">
+                        <div class="dimension-icon">🛡️</div>
+                        <div class="dimension-content">
+                            <h4>許容可能な損失（Affordable Loss）</h4>
+                            <p>「いくら儲かるか」ではなく「いくらまでなら失っても大丈夫か」を基準に意思決定する考え方。大きなリスクを避け、持続可能な挑戦を続けます。</p>
+                            <div class="dimension-range">
+                                <span class="expert-range">熟練: 3.8-4.2</span>
+                                <span class="beginner-range">初心者: 3.0-3.5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dimension-card">
+                        <div class="dimension-icon">🌊</div>
+                        <div class="dimension-content">
+                            <h4>柔軟性（Flexibility）</h4>
+                            <p>予期せぬ出来事を脅威ではなく機会として捉え、計画を柔軟に変更する姿勢。環境の変化に適応しながらビジネスを進化させます。</p>
+                            <div class="dimension-range">
+                                <span class="expert-range">熟練: 4.0-4.3</span>
+                                <span class="beginner-range">初心者: 3.2-3.8</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reflection-section">
+                    <h3>振り返りの質問</h3>
+                    <ul class="reflection-questions">
+                        <li>この結果は、ご自身の感覚と一致しますか？</li>
+                        <li>熟練起業家と比較して、特に差が大きい要素はどれですか？それはなぜだと思いますか？</li>
+                        <li>現在の事業やプロジェクトにおいて、どの要素をより意識したいですか？</li>
+                        <li>「実験」の要素を高めるとしたら、どんな小さな試みから始められそうですか？</li>
+                        <li>状況によって、あなたの意思決定スタイルは変わりますか？</li>
+                    </ul>
+                </div>
+
+                <div class="important-notice">
+                    <h3>⚠️ 重要</h3>
+                    <p>このツールは教育・研究目的の非商用ツールです。</p>
+                    <ul>
+                        <li>スコアに良い・悪いはありません</li>
+                        <li>起業家としての能力や成功可能性を示すものではありません</li>
+                        <li>状況によって適切なスタイルは異なります</li>
+                        <li>熟練起業家と異なることが「問題」ではありません</li>
+                        <li>エフェクチュエーションは経験を通じて発達する傾向があります</li>
+                        <li>自己理解と振り返りのための参考情報としてご活用ください</li>
+                    </ul>
+
+                    <div class="notice-section">
+                        <h4>出典</h4>
+                        <p>Chandler, G. N., DeTienne, D. R., McKelvie, A., & Mumford, T. V. (2011). Causation and effectuation processes: A validation study. Journal of Business Venturing, 26(3), 375-390.</p>
+                        <p>Dew, N., Read, S., Sarasvathy, S. D., & Wiltbank, R. (2009). Effectual versus predictive logics in entrepreneurial decision-making. Journal of Business Venturing, 24(4), 287-309.</p>
+                    </div>
+
+                    <div class="notice-section">
+                        <h4>免責</h4>
+                        <p>このツールは研究者の許諾を得ていない実験的プロトタイプです。正式な使用には原著者の許可が必要です。</p>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="resetAssessment()">
+                        もう一度診断する
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>エフェクチュエーション自己診断ツール - 教育・研究目的</p>
+        </footer>
+    </div>
+
+    <script>
+        // Benchmark data
+        const benchmarks = {
+            // Chandler et al. (2011) Study 2
+            research: {
+                experimentation: 2.55,
+                affordableLoss: 3.48,
+                flexibility: 3.98
+            },
+            // Expert entrepreneurs (4+ ventures)
+            expert: {
+                experimentation: { min: 4.2, max: 4.5, mid: 4.35 },
+                affordableLoss: { min: 3.8, max: 4.2, mid: 4.0 },
+                flexibility: { min: 4.0, max: 4.3, mid: 4.15 },
+                total: { min: 4.0, max: 4.5, mid: 4.25 }
+            },
+            // Intermediate entrepreneurs (2-3 ventures)
+            intermediate: {
+                total: { min: 3.4, max: 3.8, mid: 3.6 }
+            },
+            // Beginner entrepreneurs (0-1 ventures)
+            beginner: {
+                experimentation: { min: 2.5, max: 3.0, mid: 2.75 },
+                affordableLoss: { min: 3.0, max: 3.5, mid: 3.25 },
+                flexibility: { min: 3.2, max: 3.8, mid: 3.5 },
+                total: { min: 2.8, max: 3.2, mid: 3.0 }
+            }
+        };
+
+        // Questions data - improved wording for general audience
+        const questions = [
+            // Experimentation (Q1-Q4)
+            {
+                id: 1,
+                category: 'experimentation',
+                categoryLabel: '実験',
+                text: '私は、色々な方法やアイデアを実際に試してみることが多い'
+            },
+            {
+                id: 2,
+                category: 'experimentation',
+                categoryLabel: '実験',
+                text: '最終的に取り組んでいることは、最初に考えていたものとはかなり違うものになっていることが多い'
+            },
+            {
+                id: 3,
+                category: 'experimentation',
+                categoryLabel: '実験',
+                text: 'うまくいく方法を見つけるまで、様々なやり方を試行錯誤した'
+            },
+            {
+                id: 4,
+                category: 'experimentation',
+                categoryLabel: '実験',
+                text: '「まずやってみて、結果を見て考える」というスタイルで進めることが多い'
+            },
+            // Affordable Loss (Q5-Q7)
+            {
+                id: 5,
+                category: 'affordableLoss',
+                categoryLabel: '許容可能な損失',
+                text: '新しいことを始めるとき、「最悪の場合でもこれくらいの損失なら大丈夫」という範囲を意識している'
+            },
+            {
+                id: 6,
+                category: 'affordableLoss',
+                categoryLabel: '許容可能な損失',
+                text: 'アイデアを試すとき、失っても困らない範囲のお金や時間だけを使うようにしている'
+            },
+            {
+                id: 7,
+                category: 'affordableLoss',
+                categoryLabel: '許容可能な損失',
+                text: 'もしうまくいかなくても、生活や仕事に深刻な影響が出ないよう、リスクを管理している'
+            },
+            // Flexibility (Q8-Q11)
+            {
+                id: 8,
+                category: 'flexibility',
+                categoryLabel: '柔軟性',
+                text: '予想外のチャンスや出来事があれば、当初の計画を変更することに抵抗がない'
+            },
+            {
+                id: 9,
+                category: 'flexibility',
+                categoryLabel: '柔軟性',
+                text: '今、手元にある資源（お金、時間、人脈など）に合わせて、やり方を柔軟に変えている'
+            },
+            {
+                id: 10,
+                category: 'flexibility',
+                categoryLabel: '柔軟性',
+                text: '新しい機会が生まれたら、それを積極的に活かそうとする'
+            },
+            {
+                id: 11,
+                category: 'flexibility',
+                categoryLabel: '柔軟性',
+                text: '自分の選択肢や可能性を狭めるような決定は、できるだけ避けるようにしている'
+            }
+        ];
+
+        // Application state
+        let currentQuestion = 0;
+        let answers = {};
+
+        // DOM elements
+        const introScreen = document.getElementById('intro-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const progressLabel = document.getElementById('progress-label');
+        const categoryLabel = document.getElementById('category-label');
+        const progressFill = document.getElementById('progress-fill');
+        const questionCategory = document.getElementById('question-category');
+        const questionText = document.getElementById('question-text');
+        const ratingOptions = document.querySelectorAll('.rating-option');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        // Initialize rating option interactions
+        ratingOptions.forEach(option => {
+            const input = option.querySelector('input');
+
+            option.addEventListener('click', () => {
+                selectOption(input.value);
+            });
+
+            option.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectOption(input.value);
+                }
+            });
+        });
+
+        function selectOption(value) {
+            answers[currentQuestion] = parseInt(value);
+
+            ratingOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                const inp = opt.querySelector('input');
+                if (inp.value === value) {
+                    opt.classList.add('selected');
+                    inp.checked = true;
+                }
+            });
+
+            nextBtn.disabled = false;
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function startAssessment() {
+            currentQuestion = 0;
+            answers = {};
+            showQuestion();
+            showScreen('question-screen');
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+
+            progressLabel.textContent = `質問 ${currentQuestion + 1} / ${questions.length}`;
+            categoryLabel.textContent = q.categoryLabel;
+            progressFill.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+            questionCategory.textContent = q.categoryLabel;
+            questionText.textContent = q.text;
+
+            ratingOptions.forEach(option => {
+                option.classList.remove('selected');
+                option.querySelector('input').checked = false;
+            });
+
+            if (answers[currentQuestion] !== undefined) {
+                ratingOptions.forEach(option => {
+                    const input = option.querySelector('input');
+                    if (parseInt(input.value) === answers[currentQuestion]) {
+                        option.classList.add('selected');
+                        input.checked = true;
+                    }
+                });
+                nextBtn.disabled = false;
+            } else {
+                nextBtn.disabled = true;
+            }
+
+            prevBtn.style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? '結果を見る' : '次へ →';
+        }
+
+        function nextQuestion() {
+            if (answers[currentQuestion] === undefined) return;
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+
+        function calculateScores() {
+            const expScore = (answers[0] + answers[1] + answers[2] + answers[3]) / 4;
+            const affScore = (answers[4] + answers[5] + answers[6]) / 3;
+            const flexScore = (answers[7] + answers[8] + answers[9] + answers[10]) / 4;
+            const totalScore = (expScore + affScore + flexScore) / 3;
+
+            return {
+                experimentation: expScore,
+                affordableLoss: affScore,
+                flexibility: flexScore,
+                total: totalScore
+            };
+        }
+
+        function getExperienceLevel(totalScore) {
+            if (totalScore >= 4.0) return 'expert';
+            if (totalScore >= 3.4) return 'intermediate';
+            return 'beginner';
+        }
+
+        function getInterpretation(score, dimension) {
+            const dimensionNames = {
+                experimentation: '実験',
+                affordableLoss: '許容可能な損失',
+                flexibility: '柔軟性'
+            };
+
+            const dimensionDescriptions = {
+                experimentation: '様々なアプローチを試す傾向',
+                affordableLoss: '許容できる範囲でリスクを管理する傾向',
+                flexibility: '変化に柔軟に対応する傾向'
+            };
+
+            const expert = benchmarks.expert[dimension];
+            const beginner = benchmarks.beginner[dimension];
+            const research = benchmarks.research[dimension];
+
+            let level, levelClass, interpretation, comparisonNote;
+
+            if (score >= 4.0) {
+                level = '高い';
+                levelClass = 'level-high';
+                interpretation = `この要素が非常に強い傾向があります。${dimensionDescriptions[dimension]}が顕著に見られます。`;
+            } else if (score >= 3.0) {
+                level = '中程度';
+                levelClass = 'level-medium';
+                interpretation = `バランスの取れた傾向があります。${dimensionDescriptions[dimension]}において、状況に応じた対応ができています。`;
+            } else {
+                level = '控えめ';
+                levelClass = 'level-low';
+                interpretation = `この要素は控えめな傾向があります。より計画的・分析的なアプローチを好む可能性があります。`;
+            }
+
+            // Comparison notes
+            const diffFromExpert = score - expert.mid;
+            const diffFromBeginner = score - beginner.mid;
+            const diffFromResearch = score - research;
+
+            if (score >= expert.min) {
+                comparisonNote = `熟練起業家（${expert.min}-${expert.max}）と同等のレベルです。`;
+            } else if (score >= beginner.max) {
+                comparisonNote = `中級レベルです。熟練者（${expert.min}-${expert.max}）までは ${(expert.mid - score).toFixed(1)} ポイントの差があります。`;
+            } else {
+                comparisonNote = `初心者レベル（${beginner.min}-${beginner.max}）の範囲です。経験を積むことで発達する可能性があります。`;
+            }
+
+            // Add research comparison
+            if (Math.abs(diffFromResearch) < 0.3) {
+                comparisonNote += ` 研究平均（${research}）とほぼ同等です。`;
+            } else if (diffFromResearch > 0) {
+                comparisonNote += ` 研究平均（${research}）より高めです。`;
+            } else {
+                comparisonNote += ` 研究平均（${research}）より低めです。`;
+            }
+
+            return { level, levelClass, interpretation, name: dimensionNames[dimension], comparisonNote };
+        }
+
+        function drawRadarChart(scores) {
+            const svg = document.getElementById('radar-chart');
+            const centerX = 160;
+            const centerY = 150;
+            const maxRadius = 100;
+
+            document.getElementById('radar-grid').innerHTML = '';
+            document.getElementById('radar-points').innerHTML = '';
+            document.getElementById('radar-labels').innerHTML = '';
+
+            const angles = [
+                -Math.PI / 2,
+                -Math.PI / 2 + (2 * Math.PI / 3),
+                -Math.PI / 2 + (4 * Math.PI / 3)
+            ];
+
+            // Draw grid
+            const gridGroup = document.getElementById('radar-grid');
+            for (let i = 1; i <= 5; i++) {
+                const radius = (i / 5) * maxRadius;
+                const points = angles.map(angle => {
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    return `${x},${y}`;
+                }).join(' ');
+
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', points);
+                polygon.setAttribute('fill', 'none');
+                polygon.setAttribute('stroke', '#e2e8f0');
+                polygon.setAttribute('stroke-width', '1');
+                gridGroup.appendChild(polygon);
+            }
+
+            // Draw axis lines
+            angles.forEach(angle => {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', centerX);
+                line.setAttribute('y1', centerY);
+                line.setAttribute('x2', centerX + maxRadius * Math.cos(angle));
+                line.setAttribute('y2', centerY + maxRadius * Math.sin(angle));
+                line.setAttribute('stroke', '#e2e8f0');
+                line.setAttribute('stroke-width', '1');
+                gridGroup.appendChild(line);
+            });
+
+            // Draw beginner polygon
+            const beginnerValues = [benchmarks.beginner.experimentation.mid, benchmarks.beginner.affordableLoss.mid, benchmarks.beginner.flexibility.mid];
+            const beginnerPoints = angles.map((angle, i) => {
+                const radius = (beginnerValues[i] / 5) * maxRadius;
+                return `${centerX + radius * Math.cos(angle)},${centerY + radius * Math.sin(angle)}`;
+            }).join(' ');
+            document.getElementById('radar-beginner').setAttribute('points', beginnerPoints);
+
+            // Draw expert polygon
+            const expertValues = [benchmarks.expert.experimentation.mid, benchmarks.expert.affordableLoss.mid, benchmarks.expert.flexibility.mid];
+            const expertPoints = angles.map((angle, i) => {
+                const radius = (expertValues[i] / 5) * maxRadius;
+                return `${centerX + radius * Math.cos(angle)},${centerY + radius * Math.sin(angle)}`;
+            }).join(' ');
+            document.getElementById('radar-expert').setAttribute('points', expertPoints);
+
+            // Draw research benchmark polygon
+            const benchmarkValues = [benchmarks.research.experimentation, benchmarks.research.affordableLoss, benchmarks.research.flexibility];
+            const benchmarkPoints = angles.map((angle, i) => {
+                const radius = (benchmarkValues[i] / 5) * maxRadius;
+                return `${centerX + radius * Math.cos(angle)},${centerY + radius * Math.sin(angle)}`;
+            }).join(' ');
+            document.getElementById('radar-benchmark').setAttribute('points', benchmarkPoints);
+
+            // Draw user data polygon
+            const scoreValues = [scores.experimentation, scores.affordableLoss, scores.flexibility];
+            const dataPoints = angles.map((angle, i) => {
+                const radius = (scoreValues[i] / 5) * maxRadius;
+                return `${centerX + radius * Math.cos(angle)},${centerY + radius * Math.sin(angle)}`;
+            }).join(' ');
+            document.getElementById('radar-data').setAttribute('points', dataPoints);
+
+            // Draw user data points
+            const pointsGroup = document.getElementById('radar-points');
+            angles.forEach((angle, i) => {
+                const radius = (scoreValues[i] / 5) * maxRadius;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', y);
+                circle.setAttribute('r', '6');
+                circle.setAttribute('fill', '#4fd1c5');
+                circle.setAttribute('stroke', 'white');
+                circle.setAttribute('stroke-width', '2');
+                pointsGroup.appendChild(circle);
+            });
+
+            // Draw labels
+            const labelsGroup = document.getElementById('radar-labels');
+            const labels = ['実験', '許容損失', '柔軟性'];
+            const labelOffsets = [
+                { x: 0, y: -25 },
+                { x: 30, y: 15 },
+                { x: -30, y: 15 }
+            ];
+
+            angles.forEach((angle, i) => {
+                const x = centerX + (maxRadius + 35) * Math.cos(angle) + labelOffsets[i].x;
+                const y = centerY + (maxRadius + 35) * Math.sin(angle) + labelOffsets[i].y;
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', x);
+                text.setAttribute('y', y);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('fill', '#4a5568');
+                text.setAttribute('font-size', '11');
+                text.setAttribute('font-weight', '600');
+                text.textContent = labels[i];
+                labelsGroup.appendChild(text);
+
+                const scoreText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                scoreText.setAttribute('x', x);
+                scoreText.setAttribute('y', y + 14);
+                scoreText.setAttribute('text-anchor', 'middle');
+                scoreText.setAttribute('fill', '#4fd1c5');
+                scoreText.setAttribute('font-size', '12');
+                scoreText.setAttribute('font-weight', '700');
+                scoreText.textContent = scoreValues[i].toFixed(2);
+                labelsGroup.appendChild(scoreText);
+            });
+        }
+
+        function updateLevelPosition(totalScore) {
+            // Calculate position (1.0 = 0%, 5.0 = 100%)
+            const percentage = ((totalScore - 1) / 4) * 100;
+            const position = Math.max(5, Math.min(95, percentage));
+
+            document.getElementById('your-position').style.left = `${position}%`;
+            document.getElementById('your-position-label').textContent = `あなた: ${totalScore.toFixed(2)}`;
+        }
+
+        function showResults() {
+            const scores = calculateScores();
+
+            // Update score displays
+            document.getElementById('score-exp').textContent = scores.experimentation.toFixed(2);
+            document.getElementById('score-aff').textContent = scores.affordableLoss.toFixed(2);
+            document.getElementById('score-flex').textContent = scores.flexibility.toFixed(2);
+
+            // Update level position
+            updateLevelPosition(scores.total);
+
+            // Update bar chart
+            document.getElementById('bar-exp').style.width = `${(scores.experimentation / 5) * 100}%`;
+            document.getElementById('bar-aff').style.width = `${(scores.affordableLoss / 5) * 100}%`;
+            document.getElementById('bar-flex').style.width = `${(scores.flexibility / 5) * 100}%`;
+            document.getElementById('bar-exp-value').textContent = scores.experimentation.toFixed(2);
+            document.getElementById('bar-aff-value').textContent = scores.affordableLoss.toFixed(2);
+            document.getElementById('bar-flex-value').textContent = scores.flexibility.toFixed(2);
+
+            // Update markers
+            // Experimentation
+            document.getElementById('marker-exp-research').style.left = `${(benchmarks.research.experimentation / 5) * 100}%`;
+            document.getElementById('marker-exp-expert').style.left = `${(benchmarks.expert.experimentation.mid / 5) * 100}%`;
+            document.getElementById('marker-exp-beginner').style.left = `${(benchmarks.beginner.experimentation.mid / 5) * 100}%`;
+
+            // Affordable Loss
+            document.getElementById('marker-aff-research').style.left = `${(benchmarks.research.affordableLoss / 5) * 100}%`;
+            document.getElementById('marker-aff-expert').style.left = `${(benchmarks.expert.affordableLoss.mid / 5) * 100}%`;
+            document.getElementById('marker-aff-beginner').style.left = `${(benchmarks.beginner.affordableLoss.mid / 5) * 100}%`;
+
+            // Flexibility
+            document.getElementById('marker-flex-research').style.left = `${(benchmarks.research.flexibility / 5) * 100}%`;
+            document.getElementById('marker-flex-expert').style.left = `${(benchmarks.expert.flexibility.mid / 5) * 100}%`;
+            document.getElementById('marker-flex-beginner').style.left = `${(benchmarks.beginner.flexibility.mid / 5) * 100}%`;
+
+            // Draw radar chart
+            drawRadarChart(scores);
+
+            // Generate interpretations
+            const interpretationsDiv = document.getElementById('interpretations');
+            interpretationsDiv.innerHTML = '';
+
+            const dimensions = ['experimentation', 'affordableLoss', 'flexibility'];
+            const cssClasses = ['experimentation', 'affordable-loss', 'flexibility'];
+
+            dimensions.forEach((dim, i) => {
+                const interp = getInterpretation(scores[dim], dim);
+                const card = document.createElement('div');
+                card.className = `interpretation-card ${cssClasses[i]}`;
+                card.innerHTML = `
+                    <h4>
+                        ${interp.name}
+                        <span class="level-badge ${interp.levelClass}">${interp.level}</span>
+                    </h4>
+                    <p>${interp.interpretation}</p>
+                    <p class="comparison-note">📊 ${interp.comparisonNote}</p>
+                `;
+                interpretationsDiv.appendChild(card);
+            });
+
+            showScreen('results-screen');
+
+            // Animate bars
+            setTimeout(() => {
+                document.getElementById('bar-exp').style.width = `${(scores.experimentation / 5) * 100}%`;
+                document.getElementById('bar-aff').style.width = `${(scores.affordableLoss / 5) * 100}%`;
+                document.getElementById('bar-flex').style.width = `${(scores.flexibility / 5) * 100}%`;
+            }, 100);
+        }
+
+        function resetAssessment() {
+            currentQuestion = 0;
+            answers = {};
+            showScreen('intro-screen');
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!questionScreen.classList.contains('active')) return;
+
+            if (e.key >= '1' && e.key <= '5') {
+                selectOption(e.key);
+            } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+                if (!nextBtn.disabled) nextQuestion();
+            } else if (e.key === 'ArrowLeft') {
+                if (currentQuestion > 0) prevQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
